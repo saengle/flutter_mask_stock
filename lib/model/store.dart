@@ -1,23 +1,23 @@
-class ClassName {
+class Store {
   final int? count;
   final List<Stores>? stores;
 
-  ClassName({
+  Store({
     this.count,
     this.stores,
   });
 
-  ClassName copyWith({
+  Store copyWith({
     int? count,
     List<Stores>? stores,
   }) {
-    return ClassName(
+    return Store(
       count: count ?? this.count,
       stores: stores ?? this.stores,
     );
   }
 
-  ClassName.fromJson(Map<String, dynamic> json)
+  Store.fromJson(Map<String, dynamic> json)
       : count = json['count'] as int?,
         stores = (json['stores'] as List?)
             ?.map((dynamic e) => Stores.fromJson(e as Map<String, dynamic>))
