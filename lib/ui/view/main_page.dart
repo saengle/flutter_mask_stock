@@ -12,17 +12,6 @@ class MainPage extends StatefulWidget {
   State<MainPage> createState() => _MainPageState();
 }
 
-// final httpsUri = Uri(
-//     scheme: 'https',
-//     host: 'dart.dev',
-//     path: 'guides/libraries/library-tour',
-//     fragment: 'numbers');
-// print(httpsUri); // https://dart.dev/guides/libraries/library-tour#numbers
-//
-// final mailtoUri = Uri(
-//     scheme: 'mailto',
-//     path: 'John.Doe@example.com',
-//     queryParameters: {'subject': 'Example'});
 class _MainPageState extends State<MainPage> {
   Future<void> fetchData() async {
     var url = Uri(
@@ -33,14 +22,24 @@ class _MainPageState extends State<MainPage> {
 
     var response = await http.get(url);
     final jsonResult = jsonDecode(response.body);
-    stores.clear();
-    final jsonStores = jsonResult['stores'];
-    jsonStores.forEach((e) {
-      stores.add(Store.fromJson(e));
+    setState(() {
+      stores.clear();
+      final jsonStores = jsonResult['stores'];
+      jsonStores.forEach((e) {
+        stores.add(Stores.fromJson(e));
+      });
     });
+
   }
 
-  List<Store> stores = <Store>[];
+  @override
+  void initState() {
+    super.initState();
+    fetchData();
+  }
+
+  List<Stores> stores = <Stores>[];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -50,20 +49,23 @@ class _MainPageState extends State<MainPage> {
           IconButton(
               onPressed: () async {
                 await fetchData();
-                if (stores != null) {
-                  print(stores[1]);
-                }
               },
               icon: const Icon(Icons.refresh))
         ],
       ),
       body: ListView(
-        children: [],
+        children: stores.map((e) {
+          return ListTile(
+            title: Text(e.name.toString()),
+            subtitle: Text(e.addr.toString()),
+            trailing: Text(e.remainStat ?? '매진'),
+          );
+        }).toList(),
       ),
     );
   }
-  // ListTile listtile() {
-  //   return ListTile(
-  //     title: Text( stores. ),
-  //   );
+
+  listTile() {
+    return stores[0];
+  }
 }

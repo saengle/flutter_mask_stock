@@ -1,32 +1,3 @@
-class Store {
-  final int? count;
-  final List<Stores>? stores;
-
-  Store({
-    this.count,
-    this.stores,
-  });
-
-  Store copyWith({
-    int? count,
-    List<Stores>? stores,
-  }) {
-    return Store(
-      count: count ?? this.count,
-      stores: stores ?? this.stores,
-    );
-  }
-
-  Store.fromJson(Map<String, dynamic> json)
-      : count = json['count'] as int?,
-        stores = (json['stores'] as List?)
-            ?.map((dynamic e) => Stores.fromJson(e as Map<String, dynamic>))
-            .toList();
-
-  Map<String, dynamic> toJson() =>
-      {'count': count, 'stores': stores?.map((e) => e.toJson()).toList()};
-}
-
 class Stores {
   final String? addr;
   final String? code;
