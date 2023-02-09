@@ -52,7 +52,11 @@ class _MainPageState extends State<MainPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('마스크 재고 있는곳 : ${stores.length}곳'),
+        title: Text('마스크 재고 있는곳 : ${stores.where((e) {
+          return e.remainStat == 'plenty' ||
+              e.remainStat == 'some' ||
+              e.remainStat == 'few';
+        }).length}곳'),
         actions: [
           IconButton(
               onPressed: () {
@@ -64,7 +68,11 @@ class _MainPageState extends State<MainPage> {
       body: isLoading
           ? loadingWidget()
           : ListView(
-              children: stores.map((e) {
+              children: stores.where((e) {
+                return e.remainStat == 'plenty' ||
+                    e.remainStat == 'some' ||
+                    e.remainStat == 'few';
+              }).map((e) {
                 return ListTile(
                   title: Text(e.name.toString()),
                   subtitle: Text(e.addr.toString()),
