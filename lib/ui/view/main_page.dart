@@ -13,7 +13,13 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
+  var isLoading = false;
+
   Future<void> fetchData() async {
+    setState(() {
+      isLoading = true;
+    });
+
     var url = Uri(
         scheme: 'https',
         host: 'gist.githubusercontent.com',
@@ -29,7 +35,9 @@ class _MainPageState extends State<MainPage> {
         stores.add(Stores.fromJson(e));
       });
     });
-
+    setState(() {
+      isLoading = false;
+    });
   }
 
   @override
@@ -44,28 +52,38 @@ class _MainPageState extends State<MainPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('마스크 재고 있는곳 : 0곳'),
+        title: Text('마스크 재고 있는곳 : ${stores.length}곳'),
         actions: [
           IconButton(
-              onPressed: () async {
-                await fetchData();
+              onPressed: () {
+                fetchData();
               },
               icon: const Icon(Icons.refresh))
         ],
       ),
-      body: ListView(
-        children: stores.map((e) {
-          return ListTile(
-            title: Text(e.name.toString()),
-            subtitle: Text(e.addr.toString()),
-            trailing: Text(e.remainStat ?? '매진'),
-          );
-        }).toList(),
-      ),
+      body: isLoading
+          ? loadingWidget()
+          : ListView(
+              children: stores.map((e) {
+                return ListTile(
+                  title: Text(e.name.toString()),
+                  subtitle: Text(e.addr.toString()),
+                  trailing: Text(e.remainStat ?? '매진'),
+                );
+              }).toList(),
+            ),
     );
   }
 
-  listTile() {
-    return stores[0];
+  Widget loadingWidget() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: const <Widget>[
+          Text('정보를 가져오는 중'),
+          CircularProgressIndicator(),
+        ],
+      ),
+    );
   }
 }
