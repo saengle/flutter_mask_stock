@@ -1,9 +1,8 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
+import 'package:flutter_mask_app/repository/store_repository.dart';
 
-import '../../model/store.dart';
+
+import '../../model/stores.dart';
 
 class MainPage extends StatefulWidget {
   const MainPage({Key? key}) : super(key: key);
@@ -13,46 +12,28 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
-  var isLoading = false;
 
-  Future<void> fetchData() async {
-    setState(() {
-      isLoading = true;
-    });
+  var _stores = <Stores>[];
+  final storeRepository = StoreRepository();
 
-    var url = Uri(
-        scheme: 'https',
-        host: 'gist.githubusercontent.com',
-        path:
-            'junsuk5/bb7485d5f70974deee920b8f0cd1e2f0/raw/063f64d9b343120c2cb01a6555cf9b38761b1d94/sample.json');
-
-    var response = await http.get(url);
-    final jsonResult = jsonDecode(response.body);
-    setState(() {
-      stores.clear();
-      final jsonStores = jsonResult['stores'];
-      jsonStores.forEach((e) {
-        stores.add(Stores.fromJson(e));
-      });
-    });
-    setState(() {
-      isLoading = false;
-    });
-  }
 
   @override
   void initState() {
     super.initState();
-    fetchData();
+    storeRepository.fetchData().then((stores) {
+      setState(() {
+        _stores = stores;
+      });
+    });
   }
 
-  List<Stores> stores = <Stores>[];
+
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('마스크 재고 있는곳 : ${stores.where((e) {
+        title: Text('마스크 재고 있는곳 : ${_stores.where((e) {
           return e.remainStat == 'plenty' ||
               e.remainStat == 'some' ||
               e.remainStat == 'few';
@@ -60,15 +41,19 @@ class _MainPageState extends State<MainPage> {
         actions: [
           IconButton(
               onPressed: () {
-                fetchData();
+                storeRepository.fetchData().then((stores) {
+                  setState(() {
+                    _stores = stores;
+                  });
+                });
               },
               icon: const Icon(Icons.refresh))
         ],
       ),
-      body: isLoading
+      body: storeRepository.isLoading
           ? loadingWidget()
           : ListView(
-              children: stores.where((e) {
+              children: _stores.where((e) {
                 return e.remainStat == 'plenty' ||
                     e.remainStat == 'some' ||
                     e.remainStat == 'few';
